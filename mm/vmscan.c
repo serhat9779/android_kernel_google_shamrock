@@ -916,18 +916,6 @@ static unsigned long shrink_page_list(struct list_head *page_list,
 		 *    reclaim. Wait for the writeback to complete.
 		 */
 		if (PageWriteback(page)) {
-<<<<<<< HEAD
-			/* Case 1 above */
-			if (current_is_kswapd() &&
-			    PageReclaim(page) &&
-			    zone_is_reclaim_writeback(zone)) {
-				nr_immediate++;
-				goto keep_locked;
-
-			/* Case 2 above */
-			} else if (global_reclaim(sc) ||
-			    !PageReclaim(page) || !(sc->gfp_mask & __GFP_IO)) {
-=======
 			/*
 			 * memcg doesn't have any dirty pages throttling so we
 			 * could easily OOM just because too many pages are in
@@ -942,7 +930,6 @@ static unsigned long shrink_page_list(struct list_head *page_list,
 			 */
 			if (global_reclaim(sc) ||
 			    !PageReclaim(page) || !may_enter_fs) {
->>>>>>> v3.10.87
 				/*
 				 * This is slightly racy - end_page_writeback()
 				 * might have just cleared PageReclaim, then

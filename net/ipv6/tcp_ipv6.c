@@ -73,10 +73,9 @@
 #include <linux/scatterlist.h>
 
 static void	tcp_v6_send_reset(struct sock *sk, struct sk_buff *skb);
+static int	tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb);
 static void	tcp_v6_reqsk_send_ack(struct sock *sk, struct sk_buff *skb,
 				      struct request_sock *req);
-
-static int	tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb);
 
 static const struct inet_connection_sock_af_ops ipv6_mapped;
 static const struct inet_connection_sock_af_ops ipv6_specific;
@@ -1339,7 +1338,7 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
 		goto discard;
 #endif
 
-	if (sk_filter(sk, skb))
+	if (tcp_filter(sk, skb))
 		goto discard;
 
 	/*
@@ -1510,8 +1509,10 @@ process:
 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
 		goto discard_and_relse;
 
-	if (sk_filter(sk, skb))
+	if (tcp_filter(sk, skb))
 		goto discard_and_relse;
+	th = (const struct tcphdr *)skb->data;
+	hdr = ipv6_hdr(skb);
 
 	skb->dev = NULL;
 
